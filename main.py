@@ -4,12 +4,23 @@ import shutil
 
 from rich.console import Console
 
-DOWNLOADS_PATH = os.path.expanduser('~\Downloads')  # Pfad zu Downloads
+# ^  KONSTANTE: Pfad zu Downloads
+DOWNLOADS_PATH = os.path.join(os.path.expanduser('~'), 'Downloads')
 
-# Prüft ob Datei älter als n Tage ist
+def clear_console():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+# ^ Prüft ob Datei älter als n Tage ist
 def old_file(file, days=3):
-    if dt.datetime.now() - dt.datetime.fromtimestamp(os.path.getctime(file)) > dt.timedelta(days):
-        return True
+    return dt.datetime.now() - dt.datetime.fromtimestamp(os.path.getctime(file)) > dt.timedelta(days)
+
+def print_directories(console, working_path):
+    directories = []
+    for data in os.listdir(working_path):
+        if os.path.isdir(data):
+            directories.append(data)
+            console.print(f'{data}', style='blue')
+    return directories
 
 
 # Main
@@ -21,16 +32,12 @@ def main():
     oldfilesdays: int = 3
 
     while True:
-        os.system('cls')
+        clear_console()
         os.chdir(working_path)
         console.print(f'Path: [blue]{os.getcwd()}[/blue]\n')
 
         # Gibt alle Ordner blau aus und fügt sie einer Liste hinzu
-        directories = []
-        for data in os.listdir():
-            if os.path.isdir(data):
-                directories.append(data)
-                console.print(f'{data}', style='blue')
+        directories = print_directories(console, working_path)
 
         # Fügt Dateien einer Liste hinzu
         files = []
@@ -72,16 +79,16 @@ def main():
 
         # Führt Eingabe aus
         cmd = console.input('\n[bold]cmd >>[/bold] ').lower()
-        if cmd in ['quit', 'q']:  # Beenden
+        if cmd in ['quit', 'q']:  # * Beenden
             break
-        elif cmd in ['sort', 's']:  # Sortiere Dateien nach Datum
+        elif cmd in ['sort', 's']:  # * Sortiere Dateien nach Datum
             sortbydate = not sortbydate
-        elif cmd in ['mark', 'm']:  # Markiere alte Dateien
+        elif cmd in ['mark', 'm']:  # * Markiere alte Dateien
             showoldfiles = not showoldfiles
-        elif cmd in ['up', 'u']:  # Öffne übergeordneten Ordner
+        elif cmd in ['up', 'u']:  # * Öffne übergeordneten Ordner
             os.chdir('..')
             working_path = os.getcwd()
-        elif cmd.split()[0] in ['open', 'o']:  # Öffne Ordner
+        elif cmd.split()[0] in ['open', 'o']:  # * Öffne Ordner
             # Prüft, ob Ordnername existiert
             try:
                 os.chdir(working_path + '\\' + cmd.split()[1])
@@ -95,7 +102,7 @@ def main():
                 pass
             # Wenn True, dann öffne Ordner
             working_path = os.getcwd()
-        elif cmd in ['reset', 'r']:  # Setze Pfad zu Downloads zurück
+        elif cmd in ['reset', 'r']:  # *Setze Pfad zu Downloads zurück
             working_path = DOWNLOADS_PATH
 
 
