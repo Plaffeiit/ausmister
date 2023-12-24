@@ -1,9 +1,5 @@
 """
-<<<<<<< HEAD
-Mistet den Download-Ordner aus, indem alle Dateien älter als n Tage verschoben werden.
-=======
-Mistet den Download-Ordner aus, indem alle Dateien älter als n Tage in einen seperaten Ordner verschoben werden.
->>>>>>> 3d2fb7e63daeebe61d132ec2aa5cc22806df12ce
+Mistet den Download-Ordner aus, indem alle Dateien älter als n Tage in einen separaten Ordner verschoben werden.
 """
 
 import pendulum
