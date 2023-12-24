@@ -1,5 +1,5 @@
 """
-Mistet den Download-Ordner aus, indem alle Dateien älter als n Tage gelöscht werden.
+Mistet den Download-Ordner aus, indem alle Dateien älter als n Tage verschoben werden.
 """
 
 import pendulum
