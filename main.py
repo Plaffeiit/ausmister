@@ -2,11 +2,9 @@
 Mistet den Download-Ordner aus, indem alle Dateien älter als n Tage in einen separaten Ordner verschoben werden.
 """
 
-import pendulum
+import datetime
 import os
 import shutil
-
-from rich.console import Console
 
 # Pfad zum Download-Ordner
 DOWNLOADS_PATH = os.path.join(os.path.expanduser("~"), "Downloads")
@@ -18,10 +16,9 @@ def clear_console():
 
 # Prüft ob Datei älter als n Tage ist
 def old_file(file, days: int = 3) -> bool:
-    now = pendulum.now("Europe/Zurich")
-    return now - pendulum.from_timestamp(os.path.getctime(file)) > pendulum.duration(
-        days=days
-    )
+    now = datetime.datetime.now()
+    file_time = datetime.datetime.fromtimestamp(os.path.getctime(file))
+    return (now - file_time).days > days
 
 
 # Gibt Liste mit Ordnern zurück
@@ -51,8 +48,7 @@ if __name__ == "__main__":
 
     os.chdir(working_path)
 
-    console = Console()
-    console.print(f"\nPath: [underline]{os.getcwd()}[/underline]\n")
+    print(f"\nPath: {os.getcwd()}\n")
 
     # Anwenderabfrage
     days = input(f"Wie alt dürfen die Dateien sein? [{oldfilesdays} Tage] ")
@@ -68,7 +64,7 @@ if __name__ == "__main__":
     # Fügt alle Ordner einer Liste hinzu
     directories = get_directories(working_path)
     for dir in directories:
-        console.print(f"{dir}", style="underline")
+        print(f"<{dir}>")
 
     # Fügt alle Dateien einer Liste hinzu
     files = get_files(working_path)
@@ -78,19 +74,19 @@ if __name__ == "__main__":
     for file in files:
         if old_file(file, oldfilesdays):
             oldfiles.append(file)
-            console.print(f"{file}", style="red")
+            print(f"* {file} *")
         else:
-            console.print(f"{file}", style="white")
+            print(f"{file}")
 
     print()
 
-    now = pendulum.now("Europe/Zurich")
-    dir_to_delete = f"{now.format('YYYYMMDD')}_to_delete"
+    now = datetime.datetime.now()
+    dir_to_delete = f"delete_{now.strftime('%Y%m%d')}"
 
     # Anwenderabfrage wenn alte Dateien vorhanden
     if oldfiles:
-        dat_del = console.input(
-            f"Dateien älter als [red]{oldfilesdays} Tage[/red] in Ordner [underline]\\{dir_to_delete}[/underline] verschieben? \[n] "
+        dat_del = input(
+            f"Die mit einem * markierten Dateien sind älter als {oldfilesdays} Tage.\nDiese in Ordner <{dir_to_delete}> verschieben? \[n] "
         )
         if dat_del.lower() in ["y", "j"]:
             new_dir = os.path.join(working_path, dir_to_delete)
